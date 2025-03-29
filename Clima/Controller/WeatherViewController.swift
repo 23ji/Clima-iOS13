@@ -9,16 +9,52 @@
 import UIKit
 
 class WeatherViewController: UIViewController {
+  
+  // MARK: UI
+  
+  @IBOutlet weak var conditionImageView: UIImageView!
+  @IBOutlet weak var temperatureLabel: UILabel!
+  @IBOutlet weak var cityLabel: UILabel!
+  @IBOutlet weak var searchTextField: UITextField!
+  
+  // MARK: Properties
+  
+  let weatherManager = WeatherManager()
+  
+  
+  // MARK: Life Cycle
+  
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    self.searchTextField.delegate = self
+  }
+  
+  @IBAction func searchWeather(_ sender: Any) {
+    self.searchTextField.endEditing(true)
+  }
+  
+}
 
-    @IBOutlet weak var conditionImageView: UIImageView!
-    @IBOutlet weak var temperatureLabel: UILabel!
-    @IBOutlet weak var cityLabel: UILabel!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
 
-
+extension WeatherViewController: UITextFieldDelegate{
+  
+  //리턴키를 눌렀을 때
+  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    guard self.searchTextField.text != "" else { return false } //"" 이기 때문에 리턴키 비허용
+    return true //""가 아니기 때문에 리턴키 동작 허용
+  }
+  
+  //사용자 입력이 끝날 때
+  func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+    guard self.searchTextField.text != "" else { return false }
+    return true
+  }
+  
+  //입력이 끝났을 때
+  func textFieldDidEndEditing(_ textField: UITextField) {
+    guard let cityName = self.searchTextField.text else { return }
+    self.searchTextField.text = ""
+    self.weatherManager.fecthWeather(cityName: cityName)
+  }
 }
 
