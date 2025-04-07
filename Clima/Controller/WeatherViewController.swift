@@ -19,7 +19,7 @@ class WeatherViewController: UIViewController {
   
   // MARK: Properties
   
-  let weatherManager = WeatherManager()
+  private var weatherManager = WeatherManager()
   
   
   // MARK: Life Cycle
@@ -27,6 +27,7 @@ class WeatherViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     self.searchTextField.delegate = self
+    self.weatherManager.delegate = self
   }
   
   @IBAction func searchWeather(_ sender: Any) {
@@ -55,6 +56,18 @@ extension WeatherViewController: UITextFieldDelegate{
     guard let cityName = self.searchTextField.text else { return }
     self.searchTextField.text = ""
     self.weatherManager.fecthWeather(cityName: cityName)
+  }
+}
+
+// 프로토콜 채택시 extension으로
+extension WeatherViewController: WeatherManagerDelegate {
+  func updateWeather(weather: WeatherModel) {
+    //쓰레드 전환
+    DispatchQueue.main.async {
+      self.conditionImageView.image = UIImage(systemName: weather.conditionName)
+      self.temperatureLabel.text = weather.temperatureString
+      self.cityLabel.text = weather.cityName
+    }
   }
 }
 
